@@ -87,109 +87,106 @@ void Union(int u, int v) {
 
 // A class that represent an undirected multi - graph with adjacency lists.
 
-class Multi_Graph {
+class MultiGraph {
     
-    int n, m;    // Number of vertices and edges
+    int V, E;                 // Number of vertices and edges
     vector<edge> *adj;
     bool *visited;
-    int *disc, *low, *parent, *explored, timer;
-    int dfs(int u, int p);
+    int timer;
+    int *disc, *low, *parent, *pedge;
+   
+    int dfs(int u);
     
 public:
     
-    Multi_Graph(int V);
-    void add_edge(int u, int v);
+    MultiGraph(int V);
+    void addEdge(int u, int v);
     int bridges();
+    
 };
 
-Multi_Graph::Multi_Graph(int V) {
+MultiGraph::MultiGraph(int n) {
     
-    n = V;
-    m = 0;
     timer = 0;
-    adj = new vector<edge>[V];
-    low = new int[V];
-    disc = new int[V];
-    visited = new bool[V];
-    parent = new int[V];
+    V = n;  E = 0;
+    adj = new vector<edge>[n];  
+    visited = new bool[n];
+    low = new int[n]; disc = new int[n];  
+    parent = new int[n]; pedge = new int[n];
     
 }
 
-
-void Multi_Graph::add_edge(int u, int v) {
+void MultiGraph::addEdge(int u, int v) {
     
-    adj[u].push_back(mp(v, ++m));
-    adj[v].push_back(mp(u, m));
+    adj[u].push_back(mp(v, ++E));
+    adj[v].push_back(mp(u, E));
     
 }
 
-int Multi_Graph::dfs(int u, int p = -1) {
+int MultiGraph::dfs(int u) {
     
     int bridge = 0, v, idx;
     
-    vector<edge> tree_edges;
+    vector<int> dfsOrder;
     
-    stack< pair<int, int> > stack;
+    stack<int> stack;
     
-    stack.push(mp(u, -1));
+    stack.push(u);
     
     while (!stack.empty()) {
-        u = stack.top().first;
-        v = stack.top().second;
         
+        u = stack.top()
+            
         stack.pop();
         
         if (visited[u])
             continue;
         
         visited[u] = true;
+        dfsOrder.push_back(u);
         disc[u] = low[u] = timer++;
-        
-        if (v != -1)
-            tree_edges.push_back(mp(v, u));
+       
         
         for (edge e: adj[u]) {
             
             v = e.dest, idx = e.id;
             
             if (!visited[v]) {
-                stack.push(mp(v, u));
-                parent[v] = idx;
+                stack.push(v);
+                parent[v] = u;  pedge[v] = idx;
             }
         }
     }
     
-    vector<edge>:: reverse_iterator i;
-    for (i = tree_edges.rbegin(); i != tree_edges.rend(); ++i) {
+    vector<int>:: reverse_iterator iter;
+    for (iter = dfsOrder.rbegin(); iter != dfsOrder.rend(); ++iter) {
         
-        edge e = *i;
+        int u = *iter, p = parent[u]
         
-        int u = e.first, v = e.second;
-        
-        for (edge x: adj[v]) {
+        for (edge x: adj[u]) {
             
             int w = x.dest, idx = x.id;
             
-            if (parent[v] != idx)
-                low[v] = min(low[v], disc[w]);
+            if (pedge[u] != idx)
+                low[u] = min(low[u], disc[w]);
         }
         
-        low[u] = min(low[u], low[v]);
-        if (low[v] > disc[u])
+        low[p] = min(low[p], low[u]);
+        if (low[u] > disc[p])
             bridge++;
     }
     
-    
-    return bridge;
-    
+    return bridge;    
 }
 
-int Multi_Graph::bridges() {
+int MultiGraph::bridges() {
     
     int bridge = 0;
     timer = 0;
-    memset(visited, 0, n);
-    memset(parent, -1, n);
+    
+    memset(visited, 0, V * sizeof(int));
+    memset(parent, -1, V * sizeof(int));
+    memset(pedge,  -1, V * sizeof(int));
     
     for (int i = 0; i < n; i++) {
         if(!visited[i])
@@ -214,7 +211,7 @@ int main()
     N = readInt();
     M = readInt();
     
-    Multi_Graph C(N + 1);
+    MultiGraph C(N + 1);
     G.reserve(M + 1);
     
     for (i = 0; i < M; i++) {
@@ -241,7 +238,7 @@ int main()
             if (u == v)
                 bad++;
             else
-                C.add_edge(u, v);
+                C.addEdge(u, v);
         }
         
 

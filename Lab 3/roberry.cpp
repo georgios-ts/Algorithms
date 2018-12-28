@@ -35,6 +35,9 @@ typedef pair<int, pair<int, int> > w_edge;
 
 
 
+int parent[ MAXN + 1], Rank[ MAXN + 1];
+
+
 char buffer[BSIZE];
 long long bpos = 0L, bsize = 0L;
 
@@ -119,8 +122,8 @@ MultiGraph::MultiGraph(int n) {
 
 void MultiGraph::clear() {
     
-    m = 0;
-    for (int i = 0; i < n; i++)
+    E = 0;
+    for (int i = 0; i < V; i++)
         adj[i].clear();
 }
 
@@ -143,7 +146,7 @@ int MultiGraph::dfs(int u) {
     
     while (!stack.empty()) {
         
-        u = stack.top()
+        u = stack.top();
             
         stack.pop();
         
@@ -169,7 +172,7 @@ int MultiGraph::dfs(int u) {
     vector<int>:: reverse_iterator iter;
     for (iter = dfsOrder.rbegin(); iter != dfsOrder.rend(); ++iter) {
         
-        int u = *iter, p = parent[u]
+        int u = *iter, p = parent[u];
         
         for (edge x: adj[u]) {
             
@@ -207,7 +210,7 @@ int MultiGraph::bridges() {
 
 
 
-int N, M, parent[ MAXN + 1], Rank[ MAXN + 1];
+int N, M;
 vector<w_edge> G;
 
 

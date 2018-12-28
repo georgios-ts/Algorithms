@@ -8,7 +8,7 @@
 
 
 
-#include<iostream>
+#include <iostream>
 #include <vector>
 #include <stack>
 
@@ -102,6 +102,7 @@ public:
     MultiGraph(int V);
     void addEdge(int u, int v);
     int bridges();
+    void clear();
     
 };
 
@@ -114,6 +115,13 @@ MultiGraph::MultiGraph(int n) {
     low = new int[n]; disc = new int[n];  
     parent = new int[n]; pedge = new int[n];
     
+}
+
+void MultiGraph::clear() {
+    
+    m = 0;
+    for (int i = 0; i < n; i++)
+        adj[i].clear();
 }
 
 void MultiGraph::addEdge(int u, int v) {
@@ -234,21 +242,22 @@ int main()
         w = G[i].weight;
         j = i;
         while (j < M && G[j].weight == w) {
+            
             u = find(G[j].src);   v = find(G[j++].dst);
+            
             if (u == v)
                 bad++;
             else
                 C.addEdge(u, v);
-        }
-        
-
-        int x = C.bridges();
-        
-        critical += x;
+       }
+       
+        critical += C.bridges();
         C.clear();
         
         while (i < j) {
+            
             u = find(G[i].src);   v = find(G[i++].dst);
+            
             if (u != v)
                 Union(u, v);
         }

@@ -24,6 +24,16 @@
 #define dst second.second
 
 
+using namespace std;
+
+// edge = {dest, id} in multi-graphs 
+// (id to distinguish between parallel edges)
+typedef pair< int, int > edge;  
+
+// weighted edge {weight, source, dest}
+typedef pair<int, pair<int, int> > w_edge;
+
+
 
 char buffer[BSIZE];
 long long bpos = 0L, bsize = 0L;
@@ -48,9 +58,32 @@ int readInt()
 }
 
 
-using namespace std;
+// union - find implementation 
+int find(int u) {
+    
+    if (parent[u] == u)
+        return u;
+    
+    return parent[u] = find( parent[u] );
+}
 
-typedef pair< int, int > edge;  // edge = {dest, id} in multi-graphs (id to distinguish between parallel edges)
+
+void Union(int u, int v) {
+    
+    u = find(u);  v = find(v);
+    
+    if (Rank[u] > Rank[v])
+        parent[v] = u;
+    
+    else {
+        parent[u] = v;
+        if (Rank[u] == Rank[v])
+            Rank[v]++;
+    }
+    
+}
+
+
 
 // A class that represent an undirected multi - graph with adjacency lists.
 
@@ -67,8 +100,6 @@ public:
     Multi_Graph(int V);
     void add_edge(int u, int v);
     int bridges();
-    void clear();
-    void show();
 };
 
 Multi_Graph::Multi_Graph(int V) {
@@ -84,23 +115,6 @@ Multi_Graph::Multi_Graph(int V) {
     
 }
 
-void Multi_Graph::clear() {
-    
-    m = 0;
-    for (int i = 0; i < n; i++)
-        adj[i].clear();
-}
-
-void Multi_Graph::show() {
-    
-    for (int u = 0; u < n; u++) {
-        cout << u << ": ";
-        for(edge e: adj[u])
-            cout << e.dest << " ";
-        cout << "\n";
-    }
-    
-}
 
 void Multi_Graph::add_edge(int u, int v) {
     
@@ -187,38 +201,9 @@ int Multi_Graph::bridges() {
 
 
 
-typedef pair<int, pair<int, int> > w_edge;
-
-
 
 int N, M, parent[ MAXN + 1], Rank[ MAXN + 1];
 vector<w_edge> G;
-
-
-int find(int u) {
-    
-    if (parent[u] == u)
-        return u;
-    
-    return parent[u] = find( parent[u] );
-}
-
-
-void Union(int u, int v) {
-    
-    u = find(u);
-    v = find(v);
-    
-    if (Rank[u] > Rank[v])
-        parent[v] = u;
-    
-    else {
-        parent[u] = v;
-        if (Rank[u] == Rank[v])
-            Rank[v]++;
-    }
-    
-}
 
 
 

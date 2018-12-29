@@ -133,6 +133,9 @@ void MultiGraph::addEdge(int u, int v) {
 
 int MultiGraph::dfs(int u) {
     
+    if (adj[u].empty())
+        return 0;
+    
     int bridge = 0, v, idx;
     
     vector<int> dfsOrder;
@@ -213,22 +216,18 @@ int main()
 {
     int a, b, c, u, v, w, j, i, critical = 0, bad = 0;
     
-    N = readInt();
-    M = readInt();
+    N = readInt();   M = readInt();
     
     
     for (i = 0; i < M; i++) {
-        a = readInt();
-        b = readInt();
-        c = readInt();
+        a = readInt();  b = readInt();  c = readInt();
         G.push_back(mp(c, mp(a - 1, b - 1)));
     }
     
     sort(G.begin(), G.end());
     
     for (i = 0; i < N; i++) {
-        parent[i] = i;
-        Rank[i] = 0;
+        parent[i] = i;  Rank[i] = 0;
     }
     
     i = 0;
@@ -262,5 +261,7 @@ int main()
     
     cout << critical << "\n" << bad << "\n" << M - critical - bad << "\n";
     
+    
     return 0;
+    
 }

@@ -11,26 +11,30 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
+#include <cstring>
 
 #define MAXN 50000
 #define MAXM 500000
 #define BSIZE 1<<15
 
 #define mp make_pair
+
+using namespace std;
+
+
+// edge = {dest, id} in multi-graphs 
+// (id to distinguish between parallel edges)
 #define dest first
 #define id second
+
+typedef pair< int, int > edge;  
+
+// weighted edge {weight, source, dest}
 #define weight first
 #define src second.first
 #define dst second.second
 
-
-using namespace std;
-
-// edge = {dest, id} in multi-graphs 
-// (id to distinguish between parallel edges)
-typedef pair< int, int > edge;  
-
-// weighted edge {weight, source, dest}
 typedef pair<int, pair<int, int> > w_edge;
 
 
@@ -102,10 +106,9 @@ class MultiGraph {
     
 public:
     
-    MultiGraph(int V);
+    MultiGraph(int n);
     void addEdge(int u, int v);
     int bridges();
-    void clear();
     
 };
 
@@ -113,19 +116,13 @@ MultiGraph::MultiGraph(int n) {
     
     timer = 0;
     V = n;  E = 0;
-    adj = new vector<edge>[n];  
+    adj = new vector<edge>[n];
     visited = new bool[n];
     low = new int[n]; disc = new int[n];  
     parent = new int[n]; pedge = new int[n];
     
 }
 
-void MultiGraph::clear() {
-    
-    E = 0;
-    for (int i = 0; i < V; i++)
-        adj[i].clear();
-}
 
 void MultiGraph::addEdge(int u, int v) {
     
@@ -139,9 +136,7 @@ int MultiGraph::dfs(int u) {
     int bridge = 0, v, idx;
     
     vector<int> dfsOrder;
-    
     stack<int> stack;
-    
     stack.push(u);
     
     while (!stack.empty()) {
@@ -170,7 +165,7 @@ int MultiGraph::dfs(int u) {
     }
     
     vector<int>:: reverse_iterator iter;
-    for (iter = dfsOrder.rbegin(); iter != dfsOrder.rend(); ++iter) {
+    for (iter = dfsOrder.rbegin(); iter != dfsOrder.rend() - 1; ++iter) {
         
         int u = *iter, p = parent[u];
         
@@ -195,11 +190,11 @@ int MultiGraph::bridges() {
     int bridge = 0;
     timer = 0;
     
-    memset(visited, 0, V * sizeof(int));
+    memset(visited, 0, V * sizeof(bool));
     memset(parent, -1, V * sizeof(int));
     memset(pedge,  -1, V * sizeof(int));
     
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < V; i++) {
         if(!visited[i])
             bridge += dfs(i);
     }
@@ -214,7 +209,6 @@ int N, M;
 vector<w_edge> G;
 
 
-
 int main()
 {
     int a, b, c, u, v, w, j, i, critical = 0, bad = 0;
@@ -222,8 +216,6 @@ int main()
     N = readInt();
     M = readInt();
     
-    MultiGraph C(N + 1);
-    G.reserve(M + 1);
     
     for (i = 0; i < M; i++) {
         a = readInt();
@@ -242,6 +234,8 @@ int main()
     i = 0;
     while (i < M) {
         
+        MultiGraph C(N);
+        
         w = G[i].weight;
         j = i;
         while (j < M && G[j].weight == w) {
@@ -255,7 +249,7 @@ int main()
        }
        
         critical += C.bridges();
-        C.clear();
+
         
         while (i < j) {
             
@@ -266,9 +260,7 @@ int main()
         }
     }
     
-    cout << critical << "\n";
-    cout << bad << "\n";
-    cout << M - critical - bad << "\n";
+    cout << critical << "\n" << bad << "\n" << M - critical - bad << "\n";
     
     return 0;
 }
